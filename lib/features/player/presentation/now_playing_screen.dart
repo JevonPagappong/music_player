@@ -73,7 +73,11 @@ class NowPlayingScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              _ProgressPlaceholder(durationMs: song.durationMs),
+              _PlaybackProgress(
+                position: controller.position,
+                duration: controller.duration,
+                onSeek: (position) => controller.seek(position),
+              ),
               const SizedBox(height: 24),
               _PlaybackControls(
                 isPlaying: controller.isPlaying,
@@ -149,32 +153,44 @@ class _CoverArtPlaceholder extends StatelessWidget {
   }
 }
 
-class _ProgressPlaceholder extends StatelessWidget {
-  const _ProgressPlaceholder({required this.durationMs});
+class _PlaybackProgress extends StatelessWidget {
+  const _PlaybackProgress({
+    required this.position,
+    required this.duration,
+    required this.onSeek,
+  });
 
-  final int durationMs;
+  final Duration position;
+  final Duration duration;
+  final ValueChanged<Duration> onSeek;
 
   @override
   Widget build(BuildContext context) {
-    final duration = Duration(milliseconds: durationMs);
+    final safeDuration = duration > Duration.zero
+        ? duration
+        : const Duration(milliseconds: 1);
+
+    final safePosition = position > safeDuration ? safeDuration : position;
 
     return Column(
       children: [
         Slider(
-          value: 0,
-          onChanged: null,
+          value: safePosition.inMilliseconds.toDouble(),
+          onChanged: (value) {
+            onSeek(Duration(milliseconds: value.round()));
+          },
           min: 0,
-          max: duration.inMilliseconds.toDouble().clamp(1, double.infinity),
+          max: safeDuration.inMilliseconds.toDouble(),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              '0:00',
-              style: TextStyle(color: AppTheme.textSecondary),
+            Text(
+              _formatDuration(safePosition),
+              style: const TextStyle(color: AppTheme.textSecondary),
             ),
             Text(
-              _formatDuration(duration),
+              duration > Duration.zero ? _formatDuration(duration) : '0:00',
               style: const TextStyle(color: AppTheme.textSecondary),
             ),
           ],

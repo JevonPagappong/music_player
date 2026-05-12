@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_player/core/audio/audio_engine.dart';
 import 'package:music_player/core/models/audio_format.dart';
@@ -95,6 +96,27 @@ void main() {
       expect(controller.isPlaying, isTrue);
       expect(engine.loadedSongs, ['song-2', 'song-1']);
     });
+
+    test('updates position and seeks through audio engine', () async {
+      final engine = FakeAudioEngine();
+      final controller = PlayerController(audioEngine: engine);
+      addTearDown(controller.dispose);
+
+      final song = _song('song-1', 'Track One');
+
+      await controller.playSong(song, queue: [song]);
+
+      engine.emitPosition(const Duration(seconds: 42));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.position, const Duration(seconds: 42));
+
+      await controller.seek(const Duration(seconds: 60));
+
+      expect(controller.position, const Duration(seconds: 60));
+      expect(engine.seekCallCount, 1);
+      expect(engine.lastSeekPosition, const Duration(seconds: 60));
+    });
   });
 }
 
@@ -102,8 +124,27 @@ class FakeAudioEngine implements AudioEngine {
   final loadedSongs = <String>[];
   var playCallCount = 0;
   var pauseCallCount = 0;
+  var seekCallCount = 0;
   var stopCallCount = 0;
   var disposeCallCount = 0;
+  Duration? lastSeekPosition;
+
+  final _positionController = StreamController<Duration>.broadcast();
+  final _durationController = StreamController<Duration?>.broadcast();
+
+  @override
+  Stream<Duration> get positionStream => _positionController.stream;
+
+  @override
+  Stream<Duration?> get durationStream => _durationController.stream;
+
+  void emitPosition(Duration position) {
+    _positionController.add(position);
+  }
+
+  void emitDuration(Duration duration) {
+    _durationController.add(duration);
+  }
 
   @override
   Future<void> loadAndPlay({
@@ -124,6 +165,12 @@ class FakeAudioEngine implements AudioEngine {
   }
 
   @override
+  Future<void> seek(Duration position) async {
+    seekCallCount += 1;
+    lastSeekPosition = position;
+  }
+
+  @override
   Future<void> stop() async {
     stopCallCount += 1;
   }
@@ -131,6 +178,8 @@ class FakeAudioEngine implements AudioEngine {
   @override
   Future<void> dispose() async {
     disposeCallCount += 1;
+    await _positionController.close();
+    await _durationController.close();
   }
 }
 

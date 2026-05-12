@@ -13,6 +13,12 @@ class JustAudioEngine implements AudioEngine {
   final AudioPlayer _player;
 
   @override
+  Stream<Duration> get positionStream => _player.positionStream;
+
+  @override
+  Stream<Duration?> get durationStream => _player.durationStream;
+
+  @override
   Future<void> loadAndPlay({
     required Song song,
     required List<Song> queue,
@@ -32,6 +38,11 @@ class JustAudioEngine implements AudioEngine {
   }
 
   @override
+  Future<void> seek(Duration position) {
+    return _player.seek(position);
+  }
+
+  @override
   Future<void> stop() {
     return _player.stop();
   }
@@ -43,5 +54,8 @@ class JustAudioEngine implements AudioEngine {
 }
 
 bool canUseJustAudioEngine() {
-  return Platform.isIOS || Platform.isAndroid || Platform.isMacOS || Platform.isWindows;
+  return Platform.isIOS ||
+      Platform.isAndroid ||
+      Platform.isMacOS ||
+      Platform.isWindows;
 }

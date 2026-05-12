@@ -1,6 +1,10 @@
 import '../models/song.dart';
 
 abstract class AudioEngine {
+  Stream<Duration> get positionStream;
+
+  Stream<Duration?> get durationStream;
+
   Future<void> loadAndPlay({
     required Song song,
     required List<Song> queue,
@@ -10,6 +14,8 @@ abstract class AudioEngine {
 
   Future<void> pause();
 
+  Future<void> seek(Duration position);
+
   Future<void> stop();
 
   Future<void> dispose();
@@ -17,6 +23,12 @@ abstract class AudioEngine {
 
 class NoOpAudioEngine implements AudioEngine {
   const NoOpAudioEngine();
+
+  @override
+  Stream<Duration> get positionStream => Stream<Duration>.value(Duration.zero);
+
+  @override
+  Stream<Duration?> get durationStream => Stream<Duration?>.value(null);
 
   @override
   Future<void> loadAndPlay({
@@ -29,6 +41,9 @@ class NoOpAudioEngine implements AudioEngine {
 
   @override
   Future<void> pause() async {}
+
+  @override
+  Future<void> seek(Duration position) async {}
 
   @override
   Future<void> stop() async {}
