@@ -1,33 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
+import '../application/library_state_provider.dart';
+import 'widgets/song_tile.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final songsAsync = ref.watch(librarySongsProvider);
+
     return ListView(
       padding: const EdgeInsets.all(20),
-      children: const [
-        _GreetingHeader(),
-        SizedBox(height: 24),
-        _SectionTitle('Quick Access'),
-        SizedBox(height: 12),
-        _QuickAccessGrid(),
-        SizedBox(height: 28),
-        _SectionTitle('Your Playlists'),
-        SizedBox(height: 12),
-        _EmptyCard(
+      children: [
+        const _GreetingHeader(),
+        const SizedBox(height: 24),
+        const _SectionTitle('Quick Access'),
+        const SizedBox(height: 12),
+        const _QuickAccessGrid(),
+        const SizedBox(height: 28),
+        const _SectionTitle('Your Playlists'),
+        const SizedBox(height: 12),
+        const _EmptyCard(
           title: 'Belum ada playlist manual',
           subtitle: 'Buat playlist untuk mengelompokkan lagu favoritmu.',
         ),
-        SizedBox(height: 28),
-        _SectionTitle('Recently Added'),
-        SizedBox(height: 12),
-        _EmptyCard(
-          title: 'Belum ada lagu',
-          subtitle: 'Import lagu MP3, M4A, atau AAC untuk mulai mendengarkan.',
+        const SizedBox(height: 28),
+        const _SectionTitle('Recently Added'),
+        const SizedBox(height: 12),
+        songsAsync.when(
+          data: (songs) {
+            if (songs.isEmpty) {
+              return const _EmptyCard(
+                title: 'Belum ada lagu',
+                subtitle:
+                    'Import lagu MP3, M4A, atau AAC untuk mulai mendengarkan.',
+              );
+            }
+
+            return Column(
+              children: songs.take(5).map((song) => SongTile(song: song)).toList(),
+            );
+          },
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, stackTrace) => _EmptyCard(
+            title: 'Library gagal dimuat',
+            subtitle: error.toString(),
+          ),
         ),
       ],
     );

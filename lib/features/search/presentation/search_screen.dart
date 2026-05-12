@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
+import '../../library/application/library_state_provider.dart';
+import '../../library/presentation/widgets/song_tile.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends ConsumerState<SearchScreen> {
+  String _query = '';
+
+  @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(20),
+    final resultsAsync = ref.watch(searchResultsProvider(_query));
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Search',
             style: TextStyle(
               fontSize: 32,
@@ -20,9 +32,14 @@ class SearchScreen extends StatelessWidget {
               color: AppTheme.textPrimary,
             ),
           ),
-          SizedBox(height: 18),
+          const SizedBox(height: 18),
           TextField(
-            decoration: InputDecoration(
+            onChanged: (value) {
+              setState(() {
+                _query = value;
+              });
+            },
+            decoration: const InputDecoration(
               hintText: 'Cari lagu, artist, atau album',
               prefixIcon: Icon(Icons.search),
               filled: true,
@@ -33,13 +50,55 @@ class SearchScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 24),
-          Text(
-            'Search akan terhubung ke library lokal pada task berikutnya.',
-            style: TextStyle(color: AppTheme.textSecondary),
+          const SizedBox(height: 24),
+          Expanded(
+            child: resultsAsync.when(
+              data: (songs) {
+                if (_query.trim().isEmpty) {
+                  return const _SearchHint();
+                }
+
+                if (songs.isEmpty) {
+                  return const _EmptySearch();
+                }
+
+                return ListView(
+                  children: songs.map((song) => SongTile(song: song)).toList(),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Text(
+                error.toString(),
+                style: const TextStyle(color: AppTheme.textSecondary),
+              ),
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SearchHint extends StatelessWidget {
+  const _SearchHint();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Ketik judul lagu, artist, atau album untuk mencari library lokal.',
+      style: TextStyle(color: AppTheme.textSecondary),
+    );
+  }
+}
+
+class _EmptySearch extends StatelessWidget {
+  const _EmptySearch();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Tidak ada lagu yang cocok.',
+      style: TextStyle(color: AppTheme.textSecondary),
     );
   }
 }
