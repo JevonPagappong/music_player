@@ -16,5 +16,6 @@ void main() {
     expect(find.text('Offline Music'), findsOneWidget);
     expect(find.text('Quick Access'), findsOneWidget);
     expect(find.text('Recently Added'), findsOneWidget);
+    expect(find.text('Import Songs'), findsOneWidget);
   });
 }

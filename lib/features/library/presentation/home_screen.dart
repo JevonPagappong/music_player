@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'widgets/import_songs_button.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/library_state_provider.dart';
@@ -16,6 +17,8 @@ class HomeScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       children: [
         const _GreetingHeader(),
+        const SizedBox(height: 16),
+        const ImportSongsButton(),
         const SizedBox(height: 24),
         const _SectionTitle('Quick Access'),
         const SizedBox(height: 12),
