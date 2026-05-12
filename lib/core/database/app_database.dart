@@ -81,7 +81,7 @@ class AppDatabase extends _$AppDatabase {
               name: 'offline_music',
               web: DriftWebOptions(
                 sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-                driftWorker: Uri.parse('drift_worker.js'),
+                driftWorker: Uri.parse('drift_worker.dart.js'),
               ),
             ),
       );

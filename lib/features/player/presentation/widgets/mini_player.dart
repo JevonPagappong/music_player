@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/app_theme.dart';
 import '../../application/player_controller_provider.dart';
@@ -22,57 +23,60 @@ class MiniPlayer extends ConsumerWidget {
 
         return Material(
           color: AppTheme.surfaceLight,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-              child: Row(
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Icon(
-                        Icons.music_note,
-                        color: AppTheme.primary,
+          child: InkWell(
+            onTap: () => context.go('/now-playing'),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                child: Row(
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: Icon(
+                          Icons.music_note,
+                          color: AppTheme.primary,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SongText(
-                      title: song.title,
-                      artist: song.artist,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _SongText(
+                        title: song.title,
+                        artist: song.artist,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'Previous',
-                    onPressed: controller.previous,
-                    icon: const Icon(Icons.skip_previous),
-                    color: AppTheme.textPrimary,
-                  ),
-                  IconButton(
-                    tooltip: controller.isPlaying ? 'Pause' : 'Play',
-                    onPressed: controller.togglePlayPause,
-                    icon: Icon(
-                      controller.isPlaying
-                          ? Icons.pause_circle_filled
-                          : Icons.play_circle_fill,
+                    IconButton(
+                      tooltip: 'Previous',
+                      onPressed: controller.previous,
+                      icon: const Icon(Icons.skip_previous),
+                      color: AppTheme.textPrimary,
                     ),
-                    color: AppTheme.primary,
-                    iconSize: 34,
-                  ),
-                  IconButton(
-                    tooltip: 'Next',
-                    onPressed: controller.next,
-                    icon: const Icon(Icons.skip_next),
-                    color: AppTheme.textPrimary,
-                  ),
-                ],
+                    IconButton(
+                      tooltip: controller.isPlaying ? 'Pause' : 'Play',
+                      onPressed: controller.togglePlayPause,
+                      icon: Icon(
+                        controller.isPlaying
+                            ? Icons.pause_circle_filled
+                            : Icons.play_circle_fill,
+                      ),
+                      color: AppTheme.primary,
+                      iconSize: 34,
+                    ),
+                    IconButton(
+                      tooltip: 'Next',
+                      onPressed: controller.next,
+                      icon: const Icon(Icons.skip_next),
+                      color: AppTheme.textPrimary,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
