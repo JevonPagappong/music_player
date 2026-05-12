@@ -54,13 +54,13 @@ class MiniPlayer extends ConsumerWidget {
                     ),
                     IconButton(
                       tooltip: 'Previous',
-                      onPressed: controller.previous,
+                      onPressed: () => controller.previous(),
                       icon: const Icon(Icons.skip_previous),
                       color: AppTheme.textPrimary,
                     ),
                     IconButton(
                       tooltip: controller.isPlaying ? 'Pause' : 'Play',
-                      onPressed: controller.togglePlayPause,
+                      onPressed: () => controller.togglePlayPause(),
                       icon: Icon(
                         controller.isPlaying
                             ? Icons.pause_circle_filled
@@ -71,7 +71,7 @@ class MiniPlayer extends ConsumerWidget {
                     ),
                     IconButton(
                       tooltip: 'Next',
-                      onPressed: controller.next,
+                      onPressed: () => controller.next(),
                       icon: const Icon(Icons.skip_next),
                       color: AppTheme.textPrimary,
                     ),

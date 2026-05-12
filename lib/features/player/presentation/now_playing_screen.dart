@@ -77,9 +77,9 @@ class NowPlayingScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               _PlaybackControls(
                 isPlaying: controller.isPlaying,
-                onPrevious: controller.previous,
-                onPlayPause: controller.togglePlayPause,
-                onNext: controller.next,
+                onPrevious: () => controller.previous(),
+                onPlayPause: () => controller.togglePlayPause(),
+                onNext: () => controller.next(),
               ),
               const SizedBox(height: 32),
               const _SectionTitle('Queue'),

@@ -57,12 +57,12 @@ class HomeScreen extends ConsumerWidget {
                         song: song,
                       ),
                       song: song,
-                      onTap: () {
+                      onTap: () async {
                         ref.read(libraryControllerProvider).recordPlayed(song.songId);
-                        ref.read(playerControllerProvider).playSong(
-                          song,
-                          queue: songs,
-                        );
+                        await ref.read(playerControllerProvider).playSong(
+                              song,
+                              queue: songs,
+                            );
                         ref.invalidate(librarySongsProvider);
                         ref.invalidate(recentlyAddedSongsProvider);
                         ref.invalidate(mostPlayedSongsProvider);
