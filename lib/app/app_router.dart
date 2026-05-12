@@ -7,6 +7,7 @@ import '../features/settings/presentation/settings_screen.dart';
 import 'app_scaffold.dart';
 import '../features/player/presentation/now_playing_screen.dart';
 import '../features/playlists/presentation/auto_playlist_screen.dart';
+import '../features/playlists/presentation/manual_playlist_screen.dart';
 
 final appRouter = GoRouter(
   routes: [
@@ -45,6 +46,19 @@ final appRouter = GoRouter(
 
             return NoTransitionPage(
               child: AutoPlaylistScreen(type: type),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/manual-playlist/:id/:name',
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              child: ManualPlaylistScreen(
+                playlistId: state.pathParameters['id'] ?? '',
+                playlistName: Uri.decodeComponent(
+                  state.pathParameters['name'] ?? 'Playlist',
+                ),
+              ),
             );
           },
         ),
