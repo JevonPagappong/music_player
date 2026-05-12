@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/player_controller_provider.dart';
+import '../../lyrics/application/lyrics_state_provider.dart';
+import '../../lyrics/presentation/edit_lyrics_sheet.dart';
 
 class NowPlayingScreen extends ConsumerWidget {
   const NowPlayingScreen({super.key});
@@ -90,9 +92,26 @@ class NowPlayingScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              const _SectionTitle('Lyrics'),
+              _RowSectionTitle(
+                title: 'Lyrics',
+                actionLabel: 'Edit',
+                onActionPressed: () async {
+                  final lyrics = await ref.read(lyricsForSongProvider(song.songId).future);
+
+                  if (!context.mounted) {
+                    return;
+                  }
+
+                  await showEditLyricsSheet(
+                    context: context,
+                    ref: ref,
+                    songId: song.songId,
+                    existingLyrics: lyrics,
+                  );
+                },
+              ),
               const SizedBox(height: 12),
-              const _LyricsPlaceholder(),
+              _LyricsCard(songId: song.songId),
             ],
           ),
         );
@@ -279,6 +298,84 @@ class _QueueTile extends StatelessWidget {
         subtitle: Text(
           artist,
           style: const TextStyle(color: AppTheme.textSecondary),
+        ),
+      ),
+    );
+  }
+}
+
+class _RowSectionTitle extends StatelessWidget {
+  const _RowSectionTitle({
+    required this.title,
+    required this.actionLabel,
+    required this.onActionPressed,
+  });
+
+  final String title;
+  final String actionLabel;
+  final VoidCallback onActionPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _SectionTitle(title)),
+        TextButton.icon(
+          onPressed: onActionPressed,
+          icon: const Icon(Icons.edit_outlined),
+          label: Text(actionLabel),
+        ),
+      ],
+    );
+  }
+}
+
+class _LyricsCard extends ConsumerWidget {
+  const _LyricsCard({required this.songId});
+
+  final String songId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lyricsAsync = ref.watch(lyricsForSongProvider(songId));
+
+    return lyricsAsync.when(
+      data: (lyrics) {
+        final plainText = lyrics?.plainText?.trim();
+
+        if (plainText == null || plainText.isEmpty) {
+          return const _LyricsPlaceholder();
+        }
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Text(
+              plainText,
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                height: 1.5,
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const Card(
+        child: Padding(
+          padding: EdgeInsets.all(18),
+          child: Text(
+            'Memuat lyrics...',
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
+        ),
+      ),
+      error: (error, stackTrace) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Text(
+            error.toString(),
+            style: const TextStyle(color: AppTheme.textSecondary),
+          ),
         ),
       ),
     );
