@@ -76,8 +76,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               queue: songs,
                             );
                             ref.invalidate(librarySongsProvider);
+                            ref.invalidate(mostPlayedSongsProvider);
                           },
-                        ),
+                          onFavoritePressed: () async {
+                            await ref.read(libraryControllerProvider).setFavorite(
+                                  song.songId,
+                                  !song.isFavorite,
+                                );
+                            ref.invalidate(librarySongsProvider);
+                            ref.invalidate(favoriteSongsProvider);
+                            ref.invalidate(searchResultsProvider(_query));
+                          },
+                        )
                       )
                       .toList(),
                 );

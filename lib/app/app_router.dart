@@ -6,6 +6,7 @@ import '../features/search/presentation/search_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import 'app_scaffold.dart';
 import '../features/player/presentation/now_playing_screen.dart';
+import '../features/playlists/presentation/auto_playlist_screen.dart';
 
 final appRouter = GoRouter(
   routes: [
@@ -33,6 +34,18 @@ final appRouter = GoRouter(
           path: '/playlists',
           pageBuilder: (context, state) {
             return const NoTransitionPage(child: PlaylistsScreen());
+          },
+        ),
+        GoRoute(
+          path: '/playlists/:type',
+          pageBuilder: (context, state) {
+            final type = AutoPlaylistType.fromPathValue(
+              state.pathParameters['type'] ?? 'favorites',
+            );
+
+            return NoTransitionPage(
+              child: AutoPlaylistScreen(type: type),
+            );
           },
         ),
         GoRoute(

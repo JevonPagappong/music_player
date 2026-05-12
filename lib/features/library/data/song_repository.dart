@@ -67,6 +67,45 @@ class SongRepository {
     return records.map(_songFromRecord).toList();
   }
 
+  Future<List<Song>> getFavoriteSongs() async {
+    final query = _database.select(_database.songs)
+      ..where((table) => table.isFavorite.equals(true))
+      ..orderBy([
+        (table) => OrderingTerm.asc(table.title),
+      ]);
+
+    final records = await query.get();
+
+    return records.map(_songFromRecord).toList();
+  }
+
+  Future<List<Song>> getRecentlyAddedSongs({int limit = 50}) async {
+    final query = _database.select(_database.songs)
+      ..orderBy([
+        (table) => OrderingTerm.desc(table.importedAt),
+        (table) => OrderingTerm.asc(table.title),
+      ])
+      ..limit(limit);
+
+    final records = await query.get();
+
+    return records.map(_songFromRecord).toList();
+  }
+
+  Future<List<Song>> getMostPlayedSongs({int limit = 50}) async {
+    final query = _database.select(_database.songs)
+      ..where((table) => table.playCount.isBiggerThanValue(0))
+      ..orderBy([
+        (table) => OrderingTerm.desc(table.playCount),
+        (table) => OrderingTerm.asc(table.title),
+      ])
+      ..limit(limit);
+
+    final records = await query.get();
+
+    return records.map(_songFromRecord).toList();
+  }
+
   Future<void> setFavorite(
     String songId,
     bool isFavorite, {

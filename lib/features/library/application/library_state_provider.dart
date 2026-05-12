@@ -9,6 +9,24 @@ final librarySongsProvider = FutureProvider<List<Song>>((ref) {
   return controller.loadSongs();
 });
 
+final favoriteSongsProvider = FutureProvider<List<Song>>((ref) {
+  final controller = ref.watch(libraryControllerProvider);
+
+  return controller.loadFavoriteSongs();
+});
+
+final recentlyAddedSongsProvider = FutureProvider<List<Song>>((ref) {
+  final controller = ref.watch(libraryControllerProvider);
+
+  return controller.loadRecentlyAddedSongs();
+});
+
+final mostPlayedSongsProvider = FutureProvider<List<Song>>((ref) {
+  final controller = ref.watch(libraryControllerProvider);
+
+  return controller.loadMostPlayedSongs();
+});
+
 final searchResultsProvider =
     FutureProvider.family<List<Song>, String>((ref, query) {
   final controller = ref.watch(libraryControllerProvider);

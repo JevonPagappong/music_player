@@ -19,6 +19,18 @@ class LibraryController {
     return _repository.searchSongs(keyword);
   }
 
+  Future<List<Song>> loadFavoriteSongs() {
+    return _repository.getFavoriteSongs();
+  }
+
+  Future<List<Song>> loadRecentlyAddedSongs() {
+    return _repository.getRecentlyAddedSongs();
+  }
+
+  Future<List<Song>> loadMostPlayedSongs() {
+    return _repository.getMostPlayedSongs();
+  }
+
   Future<void> setFavorite(String songId, bool isFavorite) {
     return _repository.setFavorite(
       songId,

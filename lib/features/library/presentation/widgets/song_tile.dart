@@ -7,11 +7,13 @@ class SongTile extends StatelessWidget {
   const SongTile({
     required this.song,
     this.onTap,
+    this.onFavoritePressed,
     super.key,
   });
 
   final Song song;
   final VoidCallback? onTap;
+  final VoidCallback? onFavoritePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +52,14 @@ class SongTile extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(color: AppTheme.textSecondary),
         ),
-        trailing: song.isFavorite
-            ? const Icon(Icons.favorite, color: AppTheme.primary)
-            : const Icon(Icons.more_horiz, color: AppTheme.textSecondary),
+        trailing: IconButton(
+          tooltip: song.isFavorite ? 'Remove favorite' : 'Add favorite',
+          onPressed: onFavoritePressed,
+          icon: Icon(
+            song.isFavorite ? Icons.favorite : Icons.favorite_border,
+          ),
+          color: song.isFavorite ? AppTheme.primary : AppTheme.textSecondary,
+        ),
       ),
     );
   }
