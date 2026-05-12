@@ -6,6 +6,7 @@ import '../../library/application/library_state_provider.dart';
 import '../../library/presentation/widgets/song_tile.dart';
 import '../../library/application/library_controller_provider.dart';
 import '../../player/application/player_controller_provider.dart';
+import '../../library/presentation/widgets/edit_song_info_sheet.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -68,6 +69,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   children: songs
                       .map(
                         (song) => SongTile(
+                          onEditPressed: () => showEditSongInfoSheet(
+                            context: context,
+                            ref: ref,
+                            song: song,
+                            onSaved: () {
+                              ref.invalidate(searchResultsProvider(_query));
+                            },
+                          ),
                           song: song,
                           onTap: () {
                             ref.read(libraryControllerProvider).recordPlayed(song.songId);

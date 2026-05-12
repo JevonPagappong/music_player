@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/import_songs_button.dart';
+import 'widgets/edit_song_info_sheet.dart';
 
 import '../../../app/app_theme.dart';
 import '../application/library_state_provider.dart';
@@ -50,6 +51,11 @@ class HomeScreen extends ConsumerWidget {
                   .take(5)
                   .map(
                     (song) => SongTile(
+                      onEditPressed: () => showEditSongInfoSheet(
+                        context: context,
+                        ref: ref,
+                        song: song,
+                      ),
                       song: song,
                       onTap: () {
                         ref.read(libraryControllerProvider).recordPlayed(song.songId);

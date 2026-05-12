@@ -6,6 +6,7 @@ import '../../library/application/library_controller_provider.dart';
 import '../../library/application/library_state_provider.dart';
 import '../../library/presentation/widgets/song_tile.dart';
 import '../../player/application/player_controller_provider.dart';
+import '../../library/presentation/widgets/edit_song_info_sheet.dart';
 
 class AutoPlaylistScreen extends ConsumerWidget {
   const AutoPlaylistScreen({
@@ -47,6 +48,11 @@ class AutoPlaylistScreen extends ConsumerWidget {
               final song = songs[index];
 
               return SongTile(
+                onEditPressed: () => showEditSongInfoSheet(
+                  context: context,
+                  ref: ref,
+                  song: song,
+                ),
                 song: song,
                 onTap: () {
                   ref.read(libraryControllerProvider).recordPlayed(song.songId);

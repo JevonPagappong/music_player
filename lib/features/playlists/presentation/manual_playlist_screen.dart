@@ -8,6 +8,7 @@ import '../../library/presentation/widgets/song_tile.dart';
 import '../../player/application/player_controller_provider.dart';
 import '../application/playlist_state_provider.dart';
 import '../data/playlist_repository_provider.dart';
+import '../../library/presentation/widgets/edit_song_info_sheet.dart';
 
 class ManualPlaylistScreen extends ConsumerWidget {
   const ManualPlaylistScreen({
@@ -84,6 +85,14 @@ class ManualPlaylistScreen extends ConsumerWidget {
                   );
                 },
                 child: SongTile(
+                  onEditPressed: () => showEditSongInfoSheet(
+                    context: context,
+                    ref: ref,
+                    song: song,
+                    onSaved: () {
+                      ref.invalidate(manualPlaylistSongsProvider(playlistId));
+                    },
+                  ),
                   song: song,
                   onTap: () {
                     ref.read(libraryControllerProvider).recordPlayed(song.songId);

@@ -39,6 +39,21 @@ class LibraryController {
     );
   }
 
+  Future<void> updateSongInfo({
+    required String songId,
+    required String title,
+    required String artist,
+    required String album,
+  }) {
+    return _repository.updateSongInfo(
+      songId: songId,
+      title: title.isEmpty ? 'Unknown Title' : title,
+      artist: artist.isEmpty ? 'Unknown Artist' : artist,
+      album: album.isEmpty ? 'Unknown Album' : album,
+      updatedAt: _now().toUtc(),
+    );
+  }
+
   Future<void> recordPlayed(String songId) {
     return _repository.incrementPlayCount(
       songId,

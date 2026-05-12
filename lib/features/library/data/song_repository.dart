@@ -106,6 +106,25 @@ class SongRepository {
     return records.map(_songFromRecord).toList();
   }
 
+  Future<void> updateSongInfo({
+    required String songId,
+    required String title,
+    required String artist,
+    required String album,
+    required DateTime updatedAt,
+  }) {
+    return (_database.update(_database.songs)
+          ..where((table) => table.songId.equals(songId)))
+        .write(
+      SongsCompanion(
+        title: Value(title.trim()),
+        artist: Value(artist.trim()),
+        album: Value(album.trim()),
+        updatedAt: Value(updatedAt.toUtc()),
+      ),
+    );
+  }
+
   Future<void> setFavorite(
     String songId,
     bool isFavorite, {
