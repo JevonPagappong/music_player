@@ -5,6 +5,8 @@ import 'widgets/import_songs_button.dart';
 import '../../../app/app_theme.dart';
 import '../application/library_state_provider.dart';
 import 'widgets/song_tile.dart';
+import '../../player/application/player_controller_provider.dart';
+import '../application/library_controller_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -44,7 +46,22 @@ class HomeScreen extends ConsumerWidget {
             }
 
             return Column(
-              children: songs.take(5).map((song) => SongTile(song: song)).toList(),
+              children: songs
+                  .take(5)
+                  .map(
+                    (song) => SongTile(
+                      song: song,
+                      onTap: () {
+                        ref.read(libraryControllerProvider).recordPlayed(song.songId);
+                        ref.read(playerControllerProvider).playSong(
+                          song,
+                          queue: songs,
+                        );
+                        ref.invalidate(librarySongsProvider);
+                      },
+                    ),
+                  )
+                  .toList(),
             );
           },
           loading: () => const Center(

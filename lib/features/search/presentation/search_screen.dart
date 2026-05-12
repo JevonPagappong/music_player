@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app_theme.dart';
 import '../../library/application/library_state_provider.dart';
 import '../../library/presentation/widgets/song_tile.dart';
+import '../../library/application/library_controller_provider.dart';
+import '../../player/application/player_controller_provider.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -63,7 +65,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 }
 
                 return ListView(
-                  children: songs.map((song) => SongTile(song: song)).toList(),
+                  children: songs
+                      .map(
+                        (song) => SongTile(
+                          song: song,
+                          onTap: () {
+                            ref.read(libraryControllerProvider).recordPlayed(song.songId);
+                            ref.read(playerControllerProvider).playSong(
+                              song,
+                              queue: songs,
+                            );
+                            ref.invalidate(librarySongsProvider);
+                          },
+                        ),
+                      )
+                      .toList(),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),

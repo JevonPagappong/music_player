@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../features/player/presentation/widgets/mini_player.dart';
 
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
@@ -38,6 +39,7 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(child: child),
+      bottomSheet: const MiniPlayer(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
