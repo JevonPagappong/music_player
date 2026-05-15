@@ -3,13 +3,17 @@ import 'package:file_picker/file_picker.dart';
 import '../../../core/models/song.dart';
 import 'song_import_preparer.dart';
 import 'song_import_service.dart';
+import 'song_file_storage.dart';
 
 class ImportSongsController {
   const ImportSongsController({
     required SongImportService importService,
-  }) : _importService = importService;
+    required SongFileStorage fileStorage,
+  })  : _importService = importService,
+        _fileStorage = fileStorage;
 
   final SongImportService _importService;
+  final SongFileStorage _fileStorage;
 
   Future<List<Song>> importPickedFiles(List<PlatformFile> files) async {
     final importedSongs = <Song>[];
@@ -18,7 +22,7 @@ class ImportSongsController {
       final song = await _importService.importPreparedFile(
         source: ImportSourceFile(
           originalFileName: file.name,
-          copiedFilePath: _copiedFilePathFor(file),
+          copiedFilePath: await _fileStorage.savePickedFile(file),
           fileSizeBytes: file.size,
         ),
         metadata: ImportedSongMetadata(
@@ -33,14 +37,6 @@ class ImportSongsController {
     }
 
     return importedSongs;
-  }
-
-  String _copiedFilePathFor(PlatformFile file) {
-    if (file.path != null && file.path!.trim().isNotEmpty) {
-      return file.path!;
-    }
-
-    return 'picked-file://${file.name}';
   }
 
   String _fileNameWithoutExtension(String fileName) {

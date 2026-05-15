@@ -7,6 +7,7 @@ import 'package:music_player/features/library/application/import_songs_controlle
 import 'package:music_player/features/library/application/song_import_preparer.dart';
 import 'package:music_player/features/library/application/song_import_service.dart';
 import 'package:music_player/features/library/data/song_repository.dart';
+import 'package:music_player/features/library/application/song_file_storage.dart';
 
 void main() {
   group('ImportSongsController', () {
@@ -28,7 +29,10 @@ void main() {
         preparer: preparer,
         repository: repository,
       );
-      final controller = ImportSongsController(importService: service);
+      final controller = ImportSongsController(
+        importService: service,
+        fileStorage: const FakeSongFileStorage(),
+      );
 
       final importedSongs = await controller.importPickedFiles([
         PlatformFile(
@@ -56,4 +60,19 @@ void main() {
       expect(songs[1].filePath, 'picked-file://second track.m4a');
     });
   });
+}
+
+class FakeSongFileStorage extends SongFileStorage {
+  const FakeSongFileStorage();
+
+  @override
+  Future<String> savePickedFile(PlatformFile file) async {
+    final sourcePath = file.path;
+
+    if (sourcePath != null && sourcePath.trim().isNotEmpty) {
+      return sourcePath;
+    }
+
+    return 'picked-file://${file.name}';
+  }
 }
