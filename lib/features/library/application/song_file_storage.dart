@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -8,6 +9,10 @@ class SongFileStorage {
   const SongFileStorage();
 
   Future<String> savePickedFile(PlatformFile file) async {
+    if (kIsWeb) {
+      return 'picked-file://${file.name}';
+    }
+
     final sourcePath = file.path;
 
     if (sourcePath == null || sourcePath.trim().isEmpty) {
