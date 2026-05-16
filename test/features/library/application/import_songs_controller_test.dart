@@ -8,6 +8,7 @@ import 'package:music_player/features/library/application/song_import_preparer.d
 import 'package:music_player/features/library/application/song_import_service.dart';
 import 'package:music_player/features/library/data/song_repository.dart';
 import 'package:music_player/features/library/application/song_file_storage.dart';
+import 'package:music_player/features/library/application/song_metadata_reader.dart';
 
 void main() {
   group('ImportSongsController', () {
@@ -32,6 +33,7 @@ void main() {
       final controller = ImportSongsController(
         importService: service,
         fileStorage: const FakeSongFileStorage(),
+        metadataReader: const SongMetadataReader(),
       );
 
       final importedSongs = await controller.importPickedFiles([
