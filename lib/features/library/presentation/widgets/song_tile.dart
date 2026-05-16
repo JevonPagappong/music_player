@@ -9,6 +9,7 @@ class SongTile extends StatelessWidget {
     this.onTap,
     this.onFavoritePressed,
     this.onEditPressed,
+    this.onDeletePressed,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class SongTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onFavoritePressed;
   final VoidCallback? onEditPressed;
+  final VoidCallback? onDeletePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,13 @@ class SongTile extends StatelessWidget {
                 tooltip: 'Edit song info',
                 onPressed: onEditPressed,
                 icon: const Icon(Icons.edit_outlined),
+                color: AppTheme.textSecondary,
+              ),
+            if (onDeletePressed != null)
+              IconButton(
+                tooltip: 'Delete song',
+                onPressed: onDeletePressed,
+                icon: const Icon(Icons.delete_outline),
                 color: AppTheme.textSecondary,
               ),
             IconButton(

@@ -60,4 +60,12 @@ class LibraryController {
       playedAt: _now().toUtc(),
     );
   }
+
+  Future<void> deleteSong(String songId) {
+    return _repository.deleteSong(songId);
+  }
+
+  Future<int> getTotalStorageBytes() {
+    return _repository.getTotalStorageBytes();
+  }
 }

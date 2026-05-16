@@ -7,6 +7,7 @@ import '../../library/application/library_state_provider.dart';
 import '../../library/presentation/widgets/song_tile.dart';
 import '../../player/application/player_controller_provider.dart';
 import '../../library/presentation/widgets/edit_song_info_sheet.dart';
+import '../../library/presentation/widgets/delete_song_dialog.dart';
 
 class AutoPlaylistScreen extends ConsumerWidget {
   const AutoPlaylistScreen({
@@ -74,6 +75,16 @@ class AutoPlaylistScreen extends ConsumerWidget {
                   ref.invalidate(recentlyAddedSongsProvider);
                   ref.invalidate(mostPlayedSongsProvider);
                 },
+                onDeletePressed: () => showDeleteSongDialog(
+                  context: context,
+                  ref: ref,
+                  song: song,
+                  onDeleted: () {
+                    ref.invalidate(favoriteSongsProvider);
+                    ref.invalidate(recentlyAddedSongsProvider);
+                    ref.invalidate(mostPlayedSongsProvider);
+                  },
+                ),
               );
             },
           );

@@ -9,6 +9,7 @@ import '../../player/application/player_controller_provider.dart';
 import '../application/playlist_state_provider.dart';
 import '../data/playlist_repository_provider.dart';
 import '../../library/presentation/widgets/edit_song_info_sheet.dart';
+import '../../library/presentation/widgets/delete_song_dialog.dart';
 
 class ManualPlaylistScreen extends ConsumerWidget {
   const ManualPlaylistScreen({
@@ -113,6 +114,14 @@ class ManualPlaylistScreen extends ConsumerWidget {
                     ref.invalidate(favoriteSongsProvider);
                     ref.invalidate(manualPlaylistSongsProvider(playlistId));
                   },
+                  onDeletePressed: () => showDeleteSongDialog(
+                    context: context,
+                    ref: ref,
+                    song: song,
+                    onDeleted: () {
+                      ref.invalidate(manualPlaylistSongsProvider(playlistId));
+                    },
+                  ),
                 ),
               );
             },

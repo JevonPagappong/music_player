@@ -7,6 +7,7 @@ import '../../library/presentation/widgets/song_tile.dart';
 import '../../library/application/library_controller_provider.dart';
 import '../../player/application/player_controller_provider.dart';
 import '../../library/presentation/widgets/edit_song_info_sheet.dart';
+import '../../library/presentation/widgets/delete_song_dialog.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -97,6 +98,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             ref.invalidate(favoriteSongsProvider);
                             ref.invalidate(searchResultsProvider(_query));
                           },
+                          onDeletePressed: () => showDeleteSongDialog(
+                            context: context,
+                            ref: ref,
+                            song: song,
+                            onDeleted: () {
+                              ref.invalidate(searchResultsProvider(_query));
+                            },
+                          ),
                         )
                       )
                       .toList(),

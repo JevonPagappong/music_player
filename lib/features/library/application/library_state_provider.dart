@@ -9,6 +9,12 @@ final librarySongsProvider = FutureProvider<List<Song>>((ref) {
   return controller.loadSongs();
 });
 
+final libraryStorageBytesProvider = FutureProvider<int>((ref) {
+  final controller = ref.watch(libraryControllerProvider);
+
+  return controller.getTotalStorageBytes();
+});
+
 final favoriteSongsProvider = FutureProvider<List<Song>>((ref) {
   final controller = ref.watch(libraryControllerProvider);
 

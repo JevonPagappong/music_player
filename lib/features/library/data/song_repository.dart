@@ -125,6 +125,31 @@ class SongRepository {
     );
   }
 
+  Future<void> deleteSong(String songId) {
+    return _database.transaction(() async {
+      await (_database.delete(_database.playlistSongs)
+            ..where((table) => table.songId.equals(songId)))
+          .go();
+
+      await (_database.delete(_database.lyricsEntries)
+            ..where((table) => table.songId.equals(songId)))
+          .go();
+
+      await (_database.delete(_database.songs)
+            ..where((table) => table.songId.equals(songId)))
+          .go();
+    });
+  }
+
+  Future<int> getTotalStorageBytes() async {
+    final songs = await getAllSongs();
+
+    return songs.fold<int>(
+      0,
+      (total, song) => total + song.fileSizeBytes,
+    );
+  }
+
   Future<void> setFavorite(
     String songId,
     bool isFavorite, {
