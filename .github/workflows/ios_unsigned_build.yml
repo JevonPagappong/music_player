@@ -1,0 +1,45 @@
+name: iOS Unsigned Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+      - "feature/**"
+
+jobs:
+  ios-build:
+    name: Build iOS without code signing
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build iOS unsigned
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-runner-app-unsigned
+          path: build/ios/iphoneos/Runner.app
