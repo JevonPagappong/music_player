@@ -185,7 +185,7 @@ class _PlaylistTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        onTap: () => context.go(route),
+        onTap: () => context.push(route),
         leading: Icon(icon, color: AppTheme.primary),
         title: Text(
           title,
