@@ -12,56 +12,12 @@ Future<void> showEditLyricsSheet({
   required String songId,
   Lyrics? existingLyrics,
 }) async {
-  final controller = TextEditingController(
-    text: existingLyrics?.plainText ?? '',
-  );
-
   final result = await showDialog<_LyricsEditResult>(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        title: const Text('Edit lyrics'),
-        content: SizedBox(
-          width: 520,
-          child: TextField(
-            controller: controller,
-            autofocus: true,
-            minLines: 8,
-            maxLines: 14,
-            decoration: const InputDecoration(
-              hintText: 'Tulis lirik lagu di sini...',
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(const _LyricsEditResult.cancel());
-            },
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(const _LyricsEditResult.clear());
-            },
-            child: const Text('Hapus'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop(
-                _LyricsEditResult.save(controller.text),
-              );
-            },
-            child: const Text('Simpan'),
-          ),
-        ],
-      );
+      return _EditLyricsDialog(existingLyrics: existingLyrics);
     },
   );
-
-  controller.dispose();
 
   if (result == null || result.action == _LyricsEditAction.cancel) {
     return;
@@ -96,6 +52,86 @@ Future<void> showEditLyricsSheet({
       backgroundColor: AppTheme.surfaceLight,
     ),
   );
+}
+
+class _EditLyricsDialog extends StatefulWidget {
+  const _EditLyricsDialog({
+    this.existingLyrics,
+  });
+
+  final Lyrics? existingLyrics;
+
+  @override
+  State<_EditLyricsDialog> createState() => _EditLyricsDialogState();
+}
+
+class _EditLyricsDialogState extends State<_EditLyricsDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = TextEditingController(
+      text: widget.existingLyrics?.plainText ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _cancel() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pop(const _LyricsEditResult.cancel());
+  }
+
+  void _clear() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pop(const _LyricsEditResult.clear());
+  }
+
+  void _save() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pop(_LyricsEditResult.save(_controller.text));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit lyrics'),
+      content: SizedBox(
+        width: 520,
+        child: TextField(
+          controller: _controller,
+          autofocus: true,
+          minLines: 8,
+          maxLines: 14,
+          decoration: const InputDecoration(
+            hintText: 'Tulis lirik lagu di sini...',
+            alignLabelWithHint: true,
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _cancel,
+          child: const Text('Batal'),
+        ),
+        TextButton(
+          onPressed: _clear,
+          child: const Text('Hapus'),
+        ),
+        FilledButton(
+          onPressed: _save,
+          child: const Text('Simpan'),
+        ),
+      ],
+    );
+  }
 }
 
 class _LyricsEditResult {
