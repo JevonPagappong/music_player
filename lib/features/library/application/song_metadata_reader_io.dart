@@ -2,18 +2,19 @@ import 'dart:io';
 
 import 'package:audio_metadata_reader/audio_metadata_reader.dart'
     as audio_metadata_reader;
-import 'package:file_picker/file_picker.dart';
 
 import 'song_import_preparer.dart';
 
 class SongMetadataReader {
   const SongMetadataReader();
 
-  Future<ImportedSongMetadata> readMetadata(PlatformFile file) async {
-    final fallbackTitle = _fileNameWithoutExtension(file.name);
-    final path = file.path;
+  Future<ImportedSongMetadata> readMetadata({
+    required String originalFileName,
+    required String filePath,
+  }) async {
+    final fallbackTitle = _fileNameWithoutExtension(originalFileName);
 
-    if (path == null || path.trim().isEmpty) {
+    if (filePath.trim().isEmpty || filePath.startsWith('picked-file://')) {
       return ImportedSongMetadata(
         title: fallbackTitle,
         artist: '',
@@ -23,7 +24,18 @@ class SongMetadataReader {
     }
 
     try {
-      final metadata = audio_metadata_reader.readMetadata(File(path));
+      final file = File(filePath);
+
+      if (!await file.exists()) {
+        return ImportedSongMetadata(
+          title: fallbackTitle,
+          artist: '',
+          album: '',
+          durationMs: 0,
+        );
+      }
+
+      final metadata = audio_metadata_reader.readMetadata(file);
 
       return ImportedSongMetadata(
         title: _safeText(metadata.title, fallbackTitle),
@@ -52,6 +64,12 @@ class SongMetadataReader {
   }
 
   String _fileNameWithoutExtension(String fileName) {
-    return fileName.replaceFirst(RegExp(r'\.[^.]+$'), '').trim();
+    final fallback = fileName.replaceFirst(RegExp(r'\.[^.]+$'), '').trim();
+
+    if (fallback.isEmpty) {
+      return 'Unknown Title';
+    }
+
+    return fallback;
   }
 }

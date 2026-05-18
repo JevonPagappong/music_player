@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 
 import '../../../core/models/song.dart';
+import 'song_file_storage.dart';
 import 'song_import_preparer.dart';
 import 'song_import_service.dart';
-import 'song_file_storage.dart';
 import 'song_metadata_reader.dart';
 
 class ImportSongsController {
@@ -23,13 +23,20 @@ class ImportSongsController {
     final importedSongs = <Song>[];
 
     for (final file in files) {
+      final copiedFilePath = await _fileStorage.savePickedFile(file);
+
+      final metadata = await _metadataReader.readMetadata(
+        originalFileName: file.name,
+        filePath: copiedFilePath,
+      );
+
       final song = await _importService.importPreparedFile(
         source: ImportSourceFile(
           originalFileName: file.name,
-          copiedFilePath: await _fileStorage.savePickedFile(file),
+          copiedFilePath: copiedFilePath,
           fileSizeBytes: file.size,
         ),
-        metadata: await _metadataReader.readMetadata(file),
+        metadata: metadata,
       );
 
       importedSongs.add(song);

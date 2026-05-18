@@ -1,13 +1,14 @@
-import 'package:file_picker/file_picker.dart';
-
 import 'song_import_preparer.dart';
 
 class SongMetadataReader {
   const SongMetadataReader();
 
-  Future<ImportedSongMetadata> readMetadata(PlatformFile file) async {
+  Future<ImportedSongMetadata> readMetadata({
+    required String originalFileName,
+    required String filePath,
+  }) async {
     return ImportedSongMetadata(
-      title: _fileNameWithoutExtension(file.name),
+      title: _fileNameWithoutExtension(originalFileName),
       artist: '',
       album: '',
       durationMs: 0,
@@ -15,6 +16,12 @@ class SongMetadataReader {
   }
 
   String _fileNameWithoutExtension(String fileName) {
-    return fileName.replaceFirst(RegExp(r'\.[^.]+$'), '').trim();
+    final fallback = fileName.replaceFirst(RegExp(r'\.[^.]+$'), '').trim();
+
+    if (fallback.isEmpty) {
+      return 'Unknown Title';
+    }
+
+    return fallback;
   }
 }
