@@ -79,7 +79,8 @@ class PlaylistsScreen extends ConsumerWidget {
                   icon: Icons.queue_music,
                   title: playlist.name,
                   subtitle: 'Playlist manual',
-                  route: '/manual-playlist/${playlist.playlistId}/$encodedName',
+                  route:
+                      '/manual-playlist/${playlist.playlistId}/$encodedName',
                 );
               }).toList(),
             );
@@ -107,7 +108,12 @@ class PlaylistsScreen extends ConsumerWidget {
 
     final name = await showDialog<String>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
+        void closeDialog([String? value]) {
+          FocusManager.instance.primaryFocus?.unfocus();
+          Navigator.of(dialogContext).pop(value);
+        }
+
         return AlertDialog(
           title: const Text('Buat playlist'),
           content: TextField(
@@ -116,17 +122,16 @@ class PlaylistsScreen extends ConsumerWidget {
             decoration: const InputDecoration(
               hintText: 'Nama playlist',
             ),
-            onSubmitted: (value) {
-              Navigator.of(context).pop(value);
-            },
+            textInputAction: TextInputAction.done,
+            onSubmitted: closeDialog,
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => closeDialog(),
               child: const Text('Batal'),
             ),
             FilledButton(
-              onPressed: () => Navigator.of(context).pop(controller.text),
+              onPressed: () => closeDialog(controller.text),
               child: const Text('Buat'),
             ),
           ],
@@ -134,7 +139,9 @@ class PlaylistsScreen extends ConsumerWidget {
       },
     );
 
-    controller.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.dispose();
+    });
 
     final trimmedName = name?.trim();
 
@@ -209,7 +216,7 @@ class _EmptyManualPlaylistCard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(18),
         child: Text(
-          'Belum ada playlist manual. Tap tombol + untuk membuat playlist.',
+          'Belum ada playlist manual.\nTap tombol + untuk membuat playlist.',
           style: TextStyle(color: AppTheme.textSecondary),
         ),
       ),
